@@ -11,3 +11,4 @@ MANIFEST.in
 .idea
 .tox
 build/
+.coverage
