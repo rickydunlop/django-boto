@@ -23,43 +23,39 @@
 # IN THE SOFTWARE.
 
 import sys
-import os
 
 try:
-    from setuptools import setup
+    from setuptools import setup, find_packages
 except ImportError:
-    from distutils.core import setup
+    from distutils.core import setup, find_packages
 
-from django_boto import __version__
+# from django_boto import __version__
 
 if sys.version_info <= (2, 4):
     error = "ERROR: boto requires Python Version 2.5 or above...exiting."
-    print >> sys.stderr, error
-    sys.exit(1)
-
-README = open(os.path.join(os.path.dirname(__file__), 'README.md')).read()
-os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
+    raise SystemError(error)
 
 setup(
     name='django-boto',
-    version=__version__,
+    version='test',
     description='Wrapper of boto package for django',
-    long_description=open("README.md").read(),
     author='Vadim Lopatyuk',
     author_email='qnub.ru@gmail.com',
     url='https://github.com/qnub/django-boto/',
-    packages=["django_boto", "django_boto.s3"],
-    install_requires=["django>=1.3", "boto>=2.3.0"],
+    packages=find_packages(),
+    install_requires=["django>=1.3", "boto>=2.3.0", "python-dateutil==2.2"],
     license="MIT",
     platforms="Posix; MacOS X; Windows",
     classifiers=["Development Status :: 4 - Beta",
-                   "Intended Audience :: Developers",
-                   "License :: OSI Approved :: MIT License",
-                   "Operating System :: OS Independent",
-                   "Topic :: Internet",
-                   "Programming Language :: Python :: 2",
-                   "Programming Language :: Python :: 2.5",
-                   "Programming Language :: Python :: 2.6",
-                   "Programming Language :: Python :: 2.7",
-                   "Framework :: Django", ],
+                 "Intended Audience :: Developers",
+                 "License :: OSI Approved :: MIT License",
+                 "Operating System :: OS Independent",
+                 "Topic :: Internet",
+                 "Programming Language :: Python :: 2",
+                 "Programming Language :: Python :: 2.5",
+                 "Programming Language :: Python :: 2.6",
+                 "Programming Language :: Python :: 2.7",
+                 "Programming Language :: Python :: 3.3",
+                 "Programming Language :: Python :: 3.4",
+                 "Framework :: Django", ],
 )

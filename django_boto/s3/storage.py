@@ -11,7 +11,7 @@ from boto import connect_s3
 from boto.s3.connection import Location
 from boto.exception import S3CreateError, S3ResponseError
 
-from django_boto import settings
+from django_boto.utils import setting
 
 
 logger = logging.getLogger(__name__)
@@ -26,18 +26,21 @@ class S3Storage(Storage):
     def __init__(self, bucket_name=None, key=None, secret=None, location=None,
                  host=None, policy=None, replace=True, force_http_url=False):
 
-        self.bucket_name = bucket_name if bucket_name else settings.BOTO_S3_BUCKET
-        self.key = key if key else settings.AWS_ACCESS_KEY_ID
-        self.secret = secret if secret else settings.AWS_SECRET_ACCESS_KEY
-        self.location = location if location else settings.BOTO_BUCKET_LOCATION
-        self.host = host if host else settings.BOTO_S3_HOST
-        self.policy = policy if policy else settings.AWS_ACL_POLICY
-        self.force_http = force_http_url if force_http_url else settings.AWS_S3_FORCE_HTTP_URL
+        self.bucket_name = bucket_name if bucket_name else setting('BOTO_S3_BUCKET')
+        self.key = key if key else setting('AWS_ACCESS_KEY_ID')
+        self.secret = secret if secret else setting('AWS_SECRET_ACCESS_KEY')
+        self.location = location if location else setting('BOTO_BUCKET_LOCATION')
+        self.host = host if host else setting('BOTO_S3_HOST')
+        self.policy = policy if policy else setting('AWS_ACL_POLICY')
+        self.force_http = force_http_url if force_http_url else setting('AWS_S3_FORCE_HTTP_URL')
         self.replace = replace
 
         self.location = getattr(Location, self.location)
 
         self._bucket = None
+
+    def __repr__(self):
+        return 'S3 Bucket Storage {}'.format(self.bucket_name)
 
     @property
     def bucket(self):
