@@ -48,7 +48,11 @@ def main():
         'django.contrib.messages.middleware.MessageMiddleware',
         'beproud.django.authutils.middleware.AuthMiddleware',
     )
-    global_settings.DEFAULT_FILE_STORAGE = 'backends.s3boto.S3BotoStorage'
+    global_settings.DEFAULT_FILE_STORAGE = 'django_boto.s3.storage.S3Storage'
+    global_settings.BOTO_S3_BUCKET = 'test_name'
+    global_settings.AWS_ACCESS_KEY_ID = 'test_key'
+    global_settings.AWS_SECRET_ACCESS_KEY = 'test_secret'
+    global_settings.BOTO_BUCKET_LOCATION = 'APSoutheast2'
     global_settings.AWS_IS_GZIPPED = True
     global_settings.SECRET_KEY = "tralala"
 

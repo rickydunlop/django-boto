@@ -9,7 +9,6 @@ from django.conf import settings as _settings
 
 from boto import connect_s3
 from boto.s3.connection import Location
-from boto.exception import S3CreateError, S3ResponseError
 
 from django_boto.utils import setting
 
@@ -24,25 +23,40 @@ class S3Storage(Storage):
     """
 
     def __init__(self, bucket_name=None, key=None, secret=None, location=None,
-                 host=None, policy=None, replace=True, force_http_url=False):
+                 host=None, policy=None, replace=True, force_http_url=False,
+                 bucket_exists=False):
 
         self.bucket_name = bucket_name if bucket_name else setting(
             'BOTO_S3_BUCKET')
         self.key = key if key else setting('AWS_ACCESS_KEY_ID')
         self.secret = secret if secret else setting('AWS_SECRET_ACCESS_KEY')
-        self.host = host if host else setting('BOTO_S3_HOST')
+        self.host = host if host else setting(
+            'BOTO_S3_HOST', default='s3.amazonaws.com')
         self.policy = policy if policy else setting('AWS_ACL_POLICY')
         self.force_http = force_http_url if force_http_url else setting(
             'AWS_S3_FORCE_HTTP_URL')
         self.replace = replace
         self._set_location(
             location if location else setting('BOTO_BUCKET_LOCATION'))
+        self.bucket_exists = bucket_exists
         self._bucket = None
 
     def __repr__(self):
         return 'S3 Bucket Storage {}'.format(self.bucket_name)
 
     def _set_location(self, location):
+        """
+        Valid choices = [
+            'EU',
+            'USWest',
+            'USWest2',
+            'SAEast',
+            'APNortheast',
+            'APSoutheast',
+            'APSoutheast2',
+            'CNNorth1'
+        ]
+        """
         if location is not None:
             self.location = getattr(Location, location)
 
@@ -53,12 +67,13 @@ class S3Storage(Storage):
                 aws_access_key_id=self.key,
                 aws_secret_access_key=self.secret,
                 host=self.host)
-            try:
+            if self.bucket_exists:
+                self._bucket = self.s3.get_bucket(self.bucket_name)
+            else:
                 self._bucket = self.s3.create_bucket(
                     self.bucket_name, location=self.location,
                     policy=self.policy)
-            except (S3CreateError, S3ResponseError):
-                self._bucket = self.s3.get_bucket(self.bucket_name)
+
         return self._bucket
 
     def delete(self, name):
