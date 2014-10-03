@@ -10,6 +10,7 @@ from django.utils.deconstruct import deconstructible
 
 from boto import connect_s3
 from boto.s3.connection import Location
+from boto.exception import S3ResponseError
 
 from django_boto.utils import setting
 
@@ -25,8 +26,7 @@ class S3Storage(Storage):
     """
 
     def __init__(self, bucket_name=None, key=None, secret=None, location=None,
-                 host=None, policy=None, replace=True, force_http_url=False,
-                 bucket_exists=False):
+                 host=None, policy=None, replace=True, force_http_url=False):
 
         self.bucket_name = bucket_name if bucket_name else setting(
             'BOTO_S3_BUCKET')
@@ -40,7 +40,6 @@ class S3Storage(Storage):
         self.replace = replace
         self._set_location(
             location if location else setting('BOTO_BUCKET_LOCATION'))
-        self.bucket_exists = bucket_exists
         self._bucket = None
 
     def __repr__(self):
@@ -69,9 +68,9 @@ class S3Storage(Storage):
                 aws_access_key_id=self.key,
                 aws_secret_access_key=self.secret,
                 host=self.host)
-            if self.bucket_exists:
+            try:
                 self._bucket = self.s3.get_bucket(self.bucket_name)
-            else:
+            except S3ResponseError:
                 self._bucket = self.s3.create_bucket(
                     self.bucket_name, location=self.location,
                     policy=self.policy)
