@@ -6,6 +6,7 @@ from tempfile import TemporaryFile
 from django.core.files.storage import Storage
 from django.utils import timezone
 from django.conf import settings as _settings
+from django.utils.deconstruct import deconstructible
 
 from boto import connect_s3
 from boto.s3.connection import Location
@@ -16,6 +17,7 @@ from django_boto.utils import setting
 logger = logging.getLogger(__name__)
 
 
+@deconstructible
 class S3Storage(Storage):
 
     """
