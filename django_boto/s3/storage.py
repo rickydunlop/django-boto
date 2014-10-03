@@ -34,7 +34,7 @@ class S3Storage(Storage):
         self.secret = secret if secret else setting('AWS_SECRET_ACCESS_KEY')
         self.host = host if host else setting(
             'BOTO_S3_HOST', default='s3.amazonaws.com')
-        self.policy = policy if policy else setting('AWS_ACL_POLICY')
+        self.policy = policy if policy else setting('AWS_ACL_POLICY', 'public-read')
         self.force_http = force_http_url if force_http_url else setting(
             'AWS_S3_FORCE_HTTP_URL')
         self.replace = replace
